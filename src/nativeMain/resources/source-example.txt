@@ -1,0 +1,74 @@
+const TRUE_CONSTANT = true
+const FILE_SIZE = 10MB
+const TRACE_LOGGING_LEVEL = TRACE
+
+server {
+  port = \${PORT:8080}
+}
+
+test-1 = Test
+test-2 = $FILE_SIZE
+
+spring {
+  mvc {
+    async {
+      request-timeout = 80000
+      test-1 = Qwerty
+      test-2 = Qwerty
+    }
+  }
+
+  servlet {
+    multipart {
+      enabled = $TRUE_CONSTANT
+      max-file-size = $FILE_SIZE
+      max-request-file = $FILE_SIZE
+    }
+  }
+
+  http {
+    log-request-details = $TRUE_CONSTANT
+
+    encoding {
+      charset = UTF-8
+      enabled = $TRUE_CONSTANT
+      force = $TRUE_CONSTANT
+    }
+  }
+
+  codec {
+    max-in-memory-size = -1
+  }
+}
+
+logging {
+  level {
+    org.springframework.web {
+      server.adapter.HttpWebHandlerAdapter = $TRACE_LOGGING_LEVEL
+      HttpLogging = $TRACE_LOGGING_LEVEL
+      reactive.function.client.ExchangeFunctions = $TRACE_LOGGING_LEVEL
+    }
+
+    com.bs2.phoenix.api = DEBUG
+    root = INFO
+  }
+
+  file {
+    name = \${LOGS_DIRECTORY:logs}/phoenix.log
+    max-history = 30
+    max-size = 10MB
+  }
+
+  pattern {
+    dateformat = dd-MM-yyyy HH:mm:ss.SSS, Europe/Minsk
+    rolling-file-name = \${LOGS_DIRECTORY:logs}/archived/phoenix.%d{dd-MM-yyyy}.%i.log
+  }
+}
+
+service {
+  tickets-service-url = \${TICKETS_SERVICE_URL:http://localhost:9085}
+  dashboard-service-url = \${TICKETS_SERVICE_URL:http://localhost:9085}
+  vault-service-url = \${DASHBOARD_SERVICE_URL:http://localhost:9086}
+  geo-service-url = \${GEO_SERVICE_URL:http://localhost:9087}
+  form-config-service-url = \${FORM_CONFIG_SERVICE_URL:http://localhost:9088} 
+}
