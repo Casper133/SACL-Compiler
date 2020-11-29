@@ -20,7 +20,7 @@ identifier ::= ([A-Z] | [a-z] | [0-9] | "_" | "-" | ".")+
 
 escaped_sequence ::= ("\" ("\" | "$"))+
 
-characters_sequence ::= CHARACTER_SET+
+characters_sequence ::= SOURCE_CODE_CHARACTER+
 
 
 
@@ -35,7 +35,7 @@ END_CONFIG_BLOCK_BODY ::= END_OF_LINE+ WHITE_SPACE_CHARACTER* "}" WHITE_SPACE_CH
 
 NAME_VALUE_SEPARATOR ::= WHITE_SPACE_CHARACTER* "=" WHITE_SPACE_CHARACTER*
 
-CHARACTER_SET ::= [#x21-#xFF] | WHITE_SPACE_CHARACTER   /* Extended ASCII table without control characters */
+SOURCE_CODE_CHARACTER ::= [#x21-#xFF] | WHITE_SPACE_CHARACTER   /* Extended ASCII table without control characters */
 
 END_OF_LINE ::= WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER
 
@@ -48,4 +48,3 @@ LINE_BREAK_CHARACTER ::= (CARRIAGE_RETURN LINE_FEED)
 CARRIAGE_RETURN ::= #x0D        /* CR */
 
 LINE_FEED ::= #x0A              /* LF */
-
