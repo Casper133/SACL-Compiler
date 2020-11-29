@@ -1,50 +1,55 @@
-source_code ::= END_OF_LINE* constants_block? END_OF_LINE+ config_block_body? END_OF_LINE*
+source_code ::= (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)* constants_block?
+    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ config_block_body?
+    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)*
 
-constants_block ::= constant_declaration (LINES_SEPARATOR constant_declaration)*
+constants_block ::= constant_declaration
+    ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ constant_declaration)*
 
-constant_declaration ::= CONST_KEYWORD record_declaration
+constant_declaration ::= CONST_KEYWORD WHITE_SPACE_CHARACTER+ record_declaration
 
-config_block_body ::= (config_block | name_value_pair) (LINES_SEPARATOR (config_block | name_value_pair))*
+config_block_body ::= (config_block | name_value_pair)
+    ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ (config_block | name_value_pair))*
 
-config_block ::= WHITE_SPACE_CHARACTER* identifier BEGIN_CONFIG_BLOCK_BODY config_block_body END_CONFIG_BLOCK_BODY
+config_block ::= WHITE_SPACE_CHARACTER* identifier WHITE_SPACE_CHARACTER*
+    BEGIN_CONFIG_BLOCK_CHARACTER WHITE_SPACE_CHARACTER*
+    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ config_block_body
+    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ WHITE_SPACE_CHARACTER*
+    END_CONFIG_BLOCK_CHARACTER WHITE_SPACE_CHARACTER*
 
 name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
 
-record_declaration ::= identifier NAME_VALUE_SEPARATOR record_value
+record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS_CHARACTER WHITE_SPACE_CHARACTER* record_value
 
 record_value ::= constant_call | escaped_sequence characters_sequence | characters_sequence
 
-constant_call ::= "$" identifier
+constant_call ::= CONSTANT_CALL_CHARACTER identifier
 
-identifier ::= ([A-Z] | [a-z] | [0-9] | "_" | "-" | ".")+
+escaped_sequence ::= (ESCAPE_CHARACTER (ESCAPE_CHARACTER | CONSTANT_CALL_CHARACTER))+
 
-escaped_sequence ::= ("\" ("\" | "$"))+
+characters_sequence ::= (SOURCE_CODE_CHARACTER | WHITE_SPACE_CHARACTER)+
 
-characters_sequence ::= SOURCE_CODE_CHARACTER+
-
-
+identifier ::= (IDENTIFIER_CHARACTER)+
 
 
-LINES_SEPARATOR ::= END_OF_LINE+
 
-CONST_KEYWORD ::= "const" WHITE_SPACE_CHARACTER+
+CONST_KEYWORD ::= "const"
 
-BEGIN_CONFIG_BLOCK_BODY ::= WHITE_SPACE_CHARACTER* "{" WHITE_SPACE_CHARACTER* END_OF_LINE+
+BEGIN_CONFIG_BLOCK_CHARACTER ::= "{"
 
-END_CONFIG_BLOCK_BODY ::= END_OF_LINE+ WHITE_SPACE_CHARACTER* "}" WHITE_SPACE_CHARACTER*
+END_CONFIG_BLOCK_CHARACTER ::= "}"
 
-NAME_VALUE_SEPARATOR ::= WHITE_SPACE_CHARACTER* "=" WHITE_SPACE_CHARACTER*
+EQUALS_CHARACTER ::= "="
 
-SOURCE_CODE_CHARACTER ::= [#x21-#xFF] | WHITE_SPACE_CHARACTER   /* Extended ASCII table without control characters */
+CONSTANT_CALL_CHARACTER ::= "$"
 
-END_OF_LINE ::= WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER
+ESCAPE_CHARACTER ::= "\"
+
+IDENTIFIER_CHARACTER ::= [A-Z] | [a-z] | [0-9] | "_" | "-" | "."
+
+SOURCE_CODE_CHARACTER ::= [#x21-#xFF]   /* Extended ASCII table without control characters */
 
 WHITE_SPACE_CHARACTER ::= #x20 | #x09   /* Space | Tab */
 
-LINE_BREAK_CHARACTER ::= (CARRIAGE_RETURN LINE_FEED)
-    | CARRIAGE_RETURN
-    | LINE_FEED
-
-CARRIAGE_RETURN ::= #x0D        /* CR */
-
-LINE_FEED ::= #x0A              /* LF */
+LINE_BREAK_CHARACTER ::= (#x0D #x0A)    /* CR LF */
+    | #x0D                              /* CR */
+    | #x0A                              /* LF */
