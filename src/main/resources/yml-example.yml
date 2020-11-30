@@ -30,7 +30,7 @@ logging:
       server.adapter.HttpWebHandlerAdapter: TRACE
       HttpLogging: TRACE
       reactive.function.client.ExchangeFunctions: TRACE
-    com.bs2.phoenix.api: DEBUG
+    com.phoenix.api: DEBUG
     root: INFO
   file:
     name: ${LOGS_DIRECTORY:logs}/phoenix.log
@@ -43,6 +43,6 @@ logging:
 service:
   tickets-service-url: ${TICKETS_SERVICE_URL:http://localhost:9085}
   dashboard-service-url: ${TICKETS_SERVICE_URL:http://localhost:9085}
-  vault-service-url: ${DASHBOARD_SERVICE_URL:http://localhost:9086}
+  vault-service-url: \$TEST
   geo-service-url: ${GEO_SERVICE_URL:http://localhost:9087}
   form-config-service-url: ${FORM_CONFIG_SERVICE_URL:http://localhost:9088}
