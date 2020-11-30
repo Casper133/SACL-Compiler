@@ -1,0 +1,14 @@
+plugins {
+    id "application"
+}
+
+dependencies {
+    implementation project(":src:lexer")
+    implementation project(":src:parser")
+    implementation project(":src:static-analyzer")
+    implementation project(":src:yaml-generator")
+}
+
+application {
+    mainClassName = "com.casper.compiler.MainKt"
+}

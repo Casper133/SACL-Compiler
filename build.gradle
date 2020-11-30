@@ -1,12 +1,14 @@
 plugins {
-    id "application"
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
 }
 
-repositories {
-    mavenCentral()
-}
+allprojects {
+    apply plugin: "org.jetbrains.kotlin.jvm"
 
-application {
-    mainClassName = "com.casper.compiler.MainKt"
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+    }
 }
