@@ -22,9 +22,9 @@ name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
 
 record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS WHITE_SPACE_CHARACTER* record_value
 
-identifier ::= (TEXT_CHARACTER)+
+identifier ::= TEXT_CHARACTER+
 
-record_value ::= constant_call | escaped_sequence characters_sequence | characters_sequence
+record_value ::= constant_call | escaped_sequence? characters_sequence
 
 constant_call ::= DOLLAR_SIGN identifier
 
@@ -54,10 +54,8 @@ BACKSLASH ::= TEXT_CHARACTER - [#x21-#x5B #x5D-#xFF]       /* \ */
 
 BYTE_ORDER_MARK ::= #xFEFF
 
-WHITE_SPACE_CHARACTER ::= #x09 | #x20   /* Tab | Space */
+WHITE_SPACE_CHARACTER ::= #x09 | #x20         /* Tab | Space */
 
-LINE_BREAK_CHARACTER ::= (#x0D #x0A)    /* CR LF */
-    | #x0D                              /* CR */
-    | #x0A                              /* LF */
+LINE_BREAK_CHARACTER ::= #x0D #x0A? | #x0A    /* CR LF | CR | LF */
 
-TEXT_CHARACTER ::= [#x21-#xFF]          /* Extended ASCII table without control characters */
+TEXT_CHARACTER ::= [#x21-#xFF]                /* Extended ASCII table without control characters */
