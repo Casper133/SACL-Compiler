@@ -1,6 +1,6 @@
 /* Grammar */
 
-source_code ::= BYTE_ORDER_MARK? (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)* constants_block?
+source_code ::= (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)* constants_block?
     (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ config_block_body?
     (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)*
 
@@ -51,8 +51,6 @@ BACKSLASH ::= TEXT_CHARACTER - [#x21-#x5B #x5D-#xFF]       /* \ */
 
 
 /* Tokens */
-
-BYTE_ORDER_MARK ::= #xFEFF
 
 WHITE_SPACE_CHARACTER ::= #x09 | #x20         /* Tab | Space */
 
