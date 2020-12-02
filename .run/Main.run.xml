@@ -2,7 +2,7 @@
   <configuration default="false" name="Main" type="JetRunConfigurationType">
     <module name="SACL-Compiler.src.executor.main" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/src/executor/src/main/resources/source-example.txt" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />

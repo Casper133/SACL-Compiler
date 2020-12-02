@@ -20,39 +20,40 @@ config_block ::= WHITE_SPACE_CHARACTER* identifier WHITE_SPACE_CHARACTER*
 
 name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
 
-record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUAL WHITE_SPACE_CHARACTER* record_value
+record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS WHITE_SPACE_CHARACTER* record_value
 
-record_value ::= constant_call | escaped_sequence characters_sequence | characters_sequence
+identifier ::= TEXT_CHARACTER+
+
+record_value ::= constant_call | escaped_sequence? characters_sequence
 
 constant_call ::= DOLLAR_SIGN identifier
+
+escaped_sequence ::= (BACKSLASH (BACKSLASH | DOLLAR_SIGN))+
+
+characters_sequence ::= (TEXT_CHARACTER | WHITE_SPACE_CHARACTER)+
+
+CONST_KEYWORD ::=
+    (TEXT_CHARACTER - [#x21-#x62 #x64-#xFF])               /* c */
+    (TEXT_CHARACTER - [#x21-#x6E #x70-#xFF])               /* o */
+    (TEXT_CHARACTER - [#x21-#x6D #x6F-#xFF])               /* n */
+    (TEXT_CHARACTER - [#x21-#x72 #x74-#xFF])               /* s */
+    (TEXT_CHARACTER - [#x21-#x73 #x75-#xFF])               /* t */
+
+LEFT_BRACE ::= TEXT_CHARACTER - [#x21-#x7A #x7C-#xFF]      /* { */
+
+RIGHT_BRACE ::= TEXT_CHARACTER - [#x21-#x7C #x7E-#xFF]     /* } */
+
+EQUALS ::= TEXT_CHARACTER - [#x21-#x3C #x3E-#xFF]          /* = */
+
+DOLLAR_SIGN ::= TEXT_CHARACTER - [#x21-#x23 #x25-#xFF]     /* $ */
+
+BACKSLASH ::= TEXT_CHARACTER - [#x21-#x5B #x5D-#xFF]       /* \ */
 
 
 /* Tokens */
 
-escaped_sequence ::= (BACKSLASH (BACKSLASH | DOLLAR_SIGN))+
+WHITE_SPACE_CHARACTER ::= #x09 | #x20         /* Tab | Space */
 
-characters_sequence ::= (SOURCE_CODE_CHARACTER | WHITE_SPACE_CHARACTER)+
+LINE_BREAK_CHARACTER ::= #x0D #x0A? | #x0A    /* CR LF | CR | LF */
 
-identifier ::= (IDENTIFIER_CHARACTER)+
-
-CONST_KEYWORD ::= "const"
-
-LEFT_BRACE ::= "{"
-
-RIGHT_BRACE ::= "}"
-
-EQUAL ::= "="
-
-DOLLAR_SIGN ::= "$"
-
-BACKSLASH ::= "\"
-
-IDENTIFIER_CHARACTER ::= [A-Z] | [a-z] | [0-9] | "_" | "-" | "."
-
-SOURCE_CODE_CHARACTER ::= [#x21-#xFF]   /* Extended ASCII table without control characters */
-
-WHITE_SPACE_CHARACTER ::= #x20 | #x09   /* Space | Tab */
-
-LINE_BREAK_CHARACTER ::= (#x0D #x0A)    /* CR LF */
-    | #x0D                              /* CR */
-    | #x0A                              /* LF */
+TEXT_CHARACTER ::= [#x21-#xFF]                /* Extended ASCII table without control characters */
