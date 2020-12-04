@@ -50,7 +50,7 @@ class Lexer(private val sourceCode: String) {
     private fun Char.isWhiteSpaceCharacterToken(): Boolean = this == '\t' || this == ' '
 
     private fun Char.isLineBreakCharacterToken(): Boolean =
-        this == '\u000A' || (this == '\u000D' && nextCharacterMatchLineFeed())
+        this == '\u000A' || (this == '\u000D' && nextCharacterMatchLineFeed()) || this == '\u000D'
 
     private fun nextCharacterMatchLineFeed(): Boolean {
         if (atEndOfCode()) return false
