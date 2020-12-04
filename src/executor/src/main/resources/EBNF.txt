@@ -22,7 +22,18 @@ name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
 
 record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS WHITE_SPACE_CHARACTER* record_value
 
-identifier ::= TEXT_CHARACTER+
+identifier ::=
+    (TEXT_CHARACTER
+      | C_LETTER
+      | O_LETTER
+      | N_LETTER
+      | S_LETTER
+      | T_LETTER
+      | LEFT_BRACE
+      | RIGHT_BRACE
+      | EQUALS
+      | DOLLAR_SIGN
+      | BACKSLASH)+
 
 record_value ::= constant_call | escaped_sequence? characters_sequence
 
@@ -30,24 +41,26 @@ constant_call ::= DOLLAR_SIGN identifier
 
 escaped_sequence ::= (BACKSLASH (BACKSLASH | DOLLAR_SIGN))+
 
-characters_sequence ::= (TEXT_CHARACTER | WHITE_SPACE_CHARACTER)+
+characters_sequence ::=
+    (TEXT_CHARACTER
+      | C_LETTER
+      | O_LETTER
+      | N_LETTER
+      | S_LETTER
+      | T_LETTER
+      | LEFT_BRACE
+      | RIGHT_BRACE
+      | EQUALS
+      | DOLLAR_SIGN
+      | BACKSLASH
+      | WHITE_SPACE_CHARACTER)+
 
 CONST_KEYWORD ::=
-    (TEXT_CHARACTER - [#x21-#x62 #x64-#xFF])               /* c */
-    (TEXT_CHARACTER - [#x21-#x6E #x70-#xFF])               /* o */
-    (TEXT_CHARACTER - [#x21-#x6D #x6F-#xFF])               /* n */
-    (TEXT_CHARACTER - [#x21-#x72 #x74-#xFF])               /* s */
-    (TEXT_CHARACTER - [#x21-#x73 #x75-#xFF])               /* t */
-
-LEFT_BRACE ::= TEXT_CHARACTER - [#x21-#x7A #x7C-#xFF]      /* { */
-
-RIGHT_BRACE ::= TEXT_CHARACTER - [#x21-#x7C #x7E-#xFF]     /* } */
-
-EQUALS ::= TEXT_CHARACTER - [#x21-#x3C #x3E-#xFF]          /* = */
-
-DOLLAR_SIGN ::= TEXT_CHARACTER - [#x21-#x23 #x25-#xFF]     /* $ */
-
-BACKSLASH ::= TEXT_CHARACTER - [#x21-#x5B #x5D-#xFF]       /* \ */
+    C_LETTER
+    O_LETTER
+    N_LETTER
+    S_LETTER
+    T_LETTER
 
 
 /* Tokens */
@@ -56,4 +69,47 @@ WHITE_SPACE_CHARACTER ::= #x09 | #x20         /* Tab | Space */
 
 LINE_BREAK_CHARACTER ::= #x0D #x0A? | #x0A    /* CR LF | CR | LF */
 
-TEXT_CHARACTER ::= [#x21-#xFF]                /* Extended ASCII table without control characters */
+/*
+ Extended ASCII table without control characters
+
+ Skipped symbols:
+  #x24 - $
+  #x3D - =
+  #x5C - \
+  #x63 - c
+  #x6E - n
+  #x6F - o
+  #x73 - s
+  #x74 - t
+  #x7B - {
+  #x7D - }
+ */
+TEXT_CHARACTER ::= [#x21-#x23]
+    | [#x25-#x3C]
+    | [#x3E-#x5B]
+    | [#x5D-#x62]
+    | [#x64-#x6D]
+    | [#x70-#x72]
+    | [#x75-#x7A]
+    | #x7C
+    | [#x7E-#xFF]
+
+C_LETTER ::= "c"
+
+O_LETTER ::= "o"
+
+N_LETTER ::= "n"
+
+S_LETTER ::= "s"
+
+T_LETTER ::= "t"
+
+LEFT_BRACE ::= "{"
+
+RIGHT_BRACE ::= "}"
+
+EQUALS ::= "="
+
+DOLLAR_SIGN ::= "$"
+
+BACKSLASH ::= "\"

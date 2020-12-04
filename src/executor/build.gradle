@@ -5,11 +5,8 @@ plugins {
 dependencies {
     implementation project(":src:common-lib")
     implementation project(":src:lexer")
-    implementation project(":src:parser")
-    implementation project(":src:static-analyzer")
-    implementation project(":src:yaml-generator")
 }
 
 application {
-    mainClassName = "com.casper.compiler.MainKt"
+    mainClass.set("com.casper.compiler.MainKt")
 }
