@@ -7,7 +7,7 @@ source_code ::= (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)* constants_block?
 constants_block ::= constant_declaration
     ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ constant_declaration)*
 
-constant_declaration ::= CONST_KEYWORD WHITE_SPACE_CHARACTER+ record_declaration
+constant_declaration ::= C_LETTER O_LETTER N_LETTER S_LETTER T_LETTER WHITE_SPACE_CHARACTER+ record_declaration
 
 config_block_body ::= (config_block | name_value_pair)
     ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ (config_block | name_value_pair))*
@@ -54,13 +54,6 @@ characters_sequence ::=
       | DOLLAR_SIGN
       | BACKSLASH
       | WHITE_SPACE_CHARACTER)+
-
-CONST_KEYWORD ::=
-    C_LETTER
-    O_LETTER
-    N_LETTER
-    S_LETTER
-    T_LETTER
 
 
 /* Tokens */
