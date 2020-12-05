@@ -1,39 +1,37 @@
 /* Grammar */
 
-source_code ::= (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)* constants_block?
-    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ config_block_body?
-    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)*
+source_code ::= LINES_SEPARATOR* constants_block? LINES_SEPARATOR+ config_block_body? LINES_SEPARATOR*
 
-constants_block ::= constant_declaration
-    ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ constant_declaration)*
+constants_block ::= constant_declaration (LINES_SEPARATOR+ constant_declaration)*
 
-constant_declaration ::= C_LETTER O_LETTER N_LETTER S_LETTER T_LETTER WHITE_SPACE_CHARACTER+ record_declaration
+constant_declaration ::= CONST_KEYWORD WHITE_SPACE_CHARACTER+ record_declaration
 
-config_block_body ::= (config_block | name_value_pair)
-    ((WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ (config_block | name_value_pair))*
+CONST_KEYWORD ::= C_LETTER O_LETTER N_LETTER S_LETTER T_LETTER
 
-config_block ::= WHITE_SPACE_CHARACTER* identifier WHITE_SPACE_CHARACTER*
-    LEFT_BRACE WHITE_SPACE_CHARACTER*
-    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ config_block_body
-    (WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER)+ WHITE_SPACE_CHARACTER*
-    RIGHT_BRACE WHITE_SPACE_CHARACTER*
+config_block_body ::= (config_block | name_value_pair) (LINES_SEPARATOR+ (config_block | name_value_pair))*
+
+config_block ::= WHITE_SPACE_CHARACTER* identifier
+    WHITE_SPACE_CHARACTER* LEFT_BRACE WHITE_SPACE_CHARACTER*
+    LINES_SEPARATOR+ config_block_body LINES_SEPARATOR+
+    WHITE_SPACE_CHARACTER* RIGHT_BRACE WHITE_SPACE_CHARACTER*
+
+LINES_SEPARATOR ::= WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER
 
 name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
 
 record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS WHITE_SPACE_CHARACTER* record_value
 
-identifier ::=
-    (TEXT_CHARACTER
-      | C_LETTER
-      | O_LETTER
-      | N_LETTER
-      | S_LETTER
-      | T_LETTER
-      | LEFT_BRACE
-      | RIGHT_BRACE
-      | EQUALS
-      | DOLLAR_SIGN
-      | BACKSLASH)+
+identifier ::= (TEXT_CHARACTER
+    | C_LETTER
+    | O_LETTER
+    | N_LETTER
+    | S_LETTER
+    | T_LETTER
+    | LEFT_BRACE
+    | RIGHT_BRACE
+    | EQUALS
+    | DOLLAR_SIGN
+    | BACKSLASH)+
 
 record_value ::= constant_call | escaped_sequence? characters_sequence
 
@@ -41,19 +39,18 @@ constant_call ::= DOLLAR_SIGN identifier
 
 escaped_sequence ::= (BACKSLASH (BACKSLASH | DOLLAR_SIGN))+
 
-characters_sequence ::=
-    (TEXT_CHARACTER
-      | C_LETTER
-      | O_LETTER
-      | N_LETTER
-      | S_LETTER
-      | T_LETTER
-      | LEFT_BRACE
-      | RIGHT_BRACE
-      | EQUALS
-      | DOLLAR_SIGN
-      | BACKSLASH
-      | WHITE_SPACE_CHARACTER)+
+characters_sequence ::= (TEXT_CHARACTER
+    | C_LETTER
+    | O_LETTER
+    | N_LETTER
+    | S_LETTER
+    | T_LETTER
+    | LEFT_BRACE
+    | RIGHT_BRACE
+    | EQUALS
+    | DOLLAR_SIGN
+    | BACKSLASH
+    | WHITE_SPACE_CHARACTER)+
 
 
 /* Tokens */
