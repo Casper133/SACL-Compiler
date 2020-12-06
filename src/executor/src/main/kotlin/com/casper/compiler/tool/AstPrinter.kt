@@ -1,4 +1,4 @@
-package com.casper.compiler.parser.visitor
+package com.casper.compiler.tool
 
 import com.casper.compiler.library.token.Token
 import com.casper.compiler.library.expression.Expression

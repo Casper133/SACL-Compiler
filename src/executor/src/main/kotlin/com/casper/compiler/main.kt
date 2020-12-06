@@ -10,7 +10,7 @@ import com.casper.compiler.library.expression.impl.Identifier
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
-import com.casper.compiler.parser.visitor.AstPrinter
+import com.casper.compiler.tool.AstPrinter
 import java.io.File
 import kotlin.system.exitProcess
 
