@@ -1,4 +1,4 @@
-package com.casper.compiler.library
+package com.casper.compiler.library.error
 
 var hadError = false
 

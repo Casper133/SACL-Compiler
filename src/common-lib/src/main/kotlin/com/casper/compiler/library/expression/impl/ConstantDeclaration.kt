@@ -1,7 +1,7 @@
-package com.casper.compiler.parser.expression.impl
+package com.casper.compiler.library.expression.impl
 
-import com.casper.compiler.parser.expression.Expression
-import com.casper.compiler.parser.visitor.Visitor
+import com.casper.compiler.library.expression.Expression
+import com.casper.compiler.library.expression.Visitor
 
 data class ConstantDeclaration(val recordDeclaration: Expression) : Expression {
 

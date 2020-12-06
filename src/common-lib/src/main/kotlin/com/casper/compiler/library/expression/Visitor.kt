@@ -1,17 +1,17 @@
-package com.casper.compiler.parser.visitor
+package com.casper.compiler.library.expression
 
-import com.casper.compiler.parser.expression.impl.CharactersSequence
-import com.casper.compiler.parser.expression.impl.ConfigBlock
-import com.casper.compiler.parser.expression.impl.ConfigBlockBody
-import com.casper.compiler.parser.expression.impl.ConstantCall
-import com.casper.compiler.parser.expression.impl.ConstantDeclaration
-import com.casper.compiler.parser.expression.impl.ConstantsBlock
-import com.casper.compiler.parser.expression.impl.EscapedSequence
-import com.casper.compiler.parser.expression.impl.Identifier
-import com.casper.compiler.parser.expression.impl.NameValuePair
-import com.casper.compiler.parser.expression.impl.RecordDeclaration
-import com.casper.compiler.parser.expression.impl.RecordValue
-import com.casper.compiler.parser.expression.impl.SourceCode
+import com.casper.compiler.library.expression.impl.CharactersSequence
+import com.casper.compiler.library.expression.impl.ConfigBlock
+import com.casper.compiler.library.expression.impl.ConfigBlockBody
+import com.casper.compiler.library.expression.impl.ConstantCall
+import com.casper.compiler.library.expression.impl.ConstantDeclaration
+import com.casper.compiler.library.expression.impl.ConstantsBlock
+import com.casper.compiler.library.expression.impl.EscapedSequence
+import com.casper.compiler.library.expression.impl.Identifier
+import com.casper.compiler.library.expression.impl.NameValuePair
+import com.casper.compiler.library.expression.impl.RecordDeclaration
+import com.casper.compiler.library.expression.impl.RecordValue
+import com.casper.compiler.library.expression.impl.SourceCode
 
 interface Visitor<R> {
 

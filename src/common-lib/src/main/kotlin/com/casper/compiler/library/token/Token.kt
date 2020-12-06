@@ -1,4 +1,4 @@
-package com.casper.compiler.lexer.token
+package com.casper.compiler.library.token
 
 data class Token(
     val tokenType: TokenType,

@@ -2,15 +2,15 @@ package com.casper.compiler
 
 import com.casper.compiler.charset.resolveCharset
 import com.casper.compiler.lexer.Lexer
-import com.casper.compiler.library.hadError
-import com.casper.compiler.parser.expression.impl.CharactersSequence
-import com.casper.compiler.parser.expression.impl.ConstantDeclaration
-import com.casper.compiler.parser.expression.impl.ConstantsBlock
-import com.casper.compiler.parser.expression.impl.Identifier
-import com.casper.compiler.parser.expression.impl.RecordDeclaration
-import com.casper.compiler.parser.expression.impl.RecordValue
-import com.casper.compiler.parser.expression.impl.SourceCode
-import com.casper.compiler.parser.visitor.impl.AstPrinter
+import com.casper.compiler.library.error.hadError
+import com.casper.compiler.library.expression.impl.CharactersSequence
+import com.casper.compiler.library.expression.impl.ConstantDeclaration
+import com.casper.compiler.library.expression.impl.ConstantsBlock
+import com.casper.compiler.library.expression.impl.Identifier
+import com.casper.compiler.library.expression.impl.RecordDeclaration
+import com.casper.compiler.library.expression.impl.RecordValue
+import com.casper.compiler.library.expression.impl.SourceCode
+import com.casper.compiler.parser.visitor.AstPrinter
 import java.io.File
 import kotlin.system.exitProcess
 
