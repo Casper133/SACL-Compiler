@@ -1,7 +1,6 @@
 package com.casper.compiler
 
 import com.casper.compiler.charset.resolveCharset
-import com.casper.compiler.lexer.Lexer
 import com.casper.compiler.library.error.hadError
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConstantDeclaration

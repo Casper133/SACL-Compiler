@@ -1,4 +1,4 @@
-package com.casper.compiler.lexer
+package com.casper.compiler
 
 import com.casper.compiler.library.token.Token
 import com.casper.compiler.library.token.TokenType
