@@ -4,22 +4,29 @@ source_code ::= LINES_SEPARATOR* constants_block? LINES_SEPARATOR+ config_block_
 
 constants_block ::= constant_declaration (LINES_SEPARATOR+ constant_declaration)*
 
-constant_declaration ::= CONST_KEYWORD WHITE_SPACE_CHARACTER+ record_declaration
+constant_declaration ::= CONST_KEYWORD WHITE_SPACE_CHARACTER+ identifier WHITE_SPACE_CHARACTER* record_declaration
 
 CONST_KEYWORD ::= C_LETTER O_LETTER N_LETTER S_LETTER T_LETTER
 
-config_block_body ::= (config_block | name_value_pair) (LINES_SEPARATOR+ (config_block | name_value_pair))*
+config_block_body ::= WHITE_SPACE_CHARACTER* identifier WHITE_SPACE_CHARACTER*
+    (config_block | record_declaration)
+    (
+      LINES_SEPARATOR+
+      WHITE_SPACE_CHARACTER* identifier WHITE_SPACE_CHARACTER*
+      (config_block | record_declaration)
+    )*
 
-config_block ::= WHITE_SPACE_CHARACTER* identifier
-    WHITE_SPACE_CHARACTER* LEFT_BRACE WHITE_SPACE_CHARACTER*
+config_block ::= LEFT_BRACE WHITE_SPACE_CHARACTER*
     LINES_SEPARATOR+ config_block_body LINES_SEPARATOR+
     WHITE_SPACE_CHARACTER* RIGHT_BRACE WHITE_SPACE_CHARACTER*
 
 LINES_SEPARATOR ::= WHITE_SPACE_CHARACTER* LINE_BREAK_CHARACTER
 
-name_value_pair ::= WHITE_SPACE_CHARACTER* record_declaration
+record_declaration ::= EQUALS WHITE_SPACE_CHARACTER* record_value
 
-record_declaration ::= identifier WHITE_SPACE_CHARACTER* EQUALS WHITE_SPACE_CHARACTER* record_value
+record_value ::= constant_call | escaped_sequence? characters_sequence
+
+constant_call ::= DOLLAR_SIGN identifier
 
 identifier ::= (TEXT_CHARACTER
     | C_LETTER
@@ -32,10 +39,6 @@ identifier ::= (TEXT_CHARACTER
     | EQUALS
     | DOLLAR_SIGN
     | BACKSLASH)+
-
-record_value ::= constant_call | escaped_sequence? characters_sequence
-
-constant_call ::= DOLLAR_SIGN identifier
 
 escaped_sequence ::= (BACKSLASH (BACKSLASH | DOLLAR_SIGN))+
 

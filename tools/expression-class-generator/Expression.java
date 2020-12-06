@@ -6,7 +6,6 @@ public interface Expression {
     R visitConstantDeclarationExpression(ConstantDeclaration expression);
     R visitConfigBlockBodyExpression(ConfigBlockBody expression);
     R visitConfigBlockExpression(ConfigBlock expression);
-    R visitNameValuePairExpression(NameValuePair expression);
     R visitRecordDeclarationExpression(RecordDeclaration expression);
     R visitIdentifierExpression(Identifier expression);
     R visitRecordValueExpression(RecordValue expression);
@@ -84,19 +83,6 @@ public interface Expression {
     final Expression configBlockBody;
   }
 
-  static class NameValuePair implements Expression {
-    NameValuePair(Expression recordDeclaration) {
-      this.recordDeclaration = recordDeclaration;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitNameValuePairExpression(this);
-    }
-
-    final Expression recordDeclaration;
-  }
-
   static class RecordDeclaration implements Expression {
     RecordDeclaration(Expression identifier, Expression recordValue) {
       this.identifier = identifier;
@@ -156,8 +142,8 @@ public interface Expression {
   }
 
   static class EscapedSequence implements Expression {
-    EscapedSequence(Token escapedCharacter) {
-      this.escapedCharacter = escapedCharacter;
+    EscapedSequence(String text) {
+      this.text = text;
     }
 
     @Override
@@ -165,7 +151,7 @@ public interface Expression {
       return visitor.visitEscapedSequenceExpression(this);
     }
 
-    final Token escapedCharacter;
+    final String text;
   }
 
   static class CharactersSequence implements Expression {

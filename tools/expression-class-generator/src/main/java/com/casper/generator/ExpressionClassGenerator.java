@@ -19,12 +19,11 @@ public final class ExpressionClassGenerator {
         "ConstantDeclaration : Expression recordDeclaration",
         "ConfigBlockBody     : List<Expression> bodyExpressions",
         "ConfigBlock         : Expression identifier, Expression configBlockBody",
-        "NameValuePair       : Expression recordDeclaration",
         "RecordDeclaration   : Expression identifier, Expression recordValue",
         "Identifier          : String text",
         "RecordValue         : Expression constantCall, Expression escapedSequence, Expression charactersSequence",
         "ConstantCall        : Expression identifier",
-        "EscapedSequence     : Token escapedCharacter",
+        "EscapedSequence     : String text",
         "CharactersSequence  : String text"
     ));
 

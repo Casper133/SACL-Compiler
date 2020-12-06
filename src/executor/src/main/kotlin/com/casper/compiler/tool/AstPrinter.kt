@@ -10,7 +10,6 @@ import com.casper.compiler.library.expression.impl.ConstantDeclaration
 import com.casper.compiler.library.expression.impl.ConstantsBlock
 import com.casper.compiler.library.expression.impl.EscapedSequence
 import com.casper.compiler.library.expression.impl.Identifier
-import com.casper.compiler.library.expression.impl.NameValuePair
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
@@ -52,12 +51,6 @@ class AstPrinter : Visitor<String> {
             expression.configBlockBody
         )
 
-    override fun visitNameValuePairExpression(expression: NameValuePair): String =
-        parenthesize(
-            "NameValuePair",
-            expression.recordDeclaration
-        )
-
     override fun visitRecordDeclarationExpression(expression: RecordDeclaration): String =
         parenthesize(
             "RecordDeclaration",
@@ -83,11 +76,7 @@ class AstPrinter : Visitor<String> {
         )
 
     override fun visitEscapedSequenceExpression(expression: EscapedSequence): String =
-        "(EscapedSequence ${
-            expression
-                .escapedCharacters
-                .joinToString(separator = " ", transform = Token::lexeme)
-        })"
+        "(EscapedSequence ${expression.text})"
 
     override fun visitCharactersSequenceExpression(expression: CharactersSequence): String =
         "(CharactersSequence ${expression.text})"

@@ -8,7 +8,6 @@ import com.casper.compiler.library.expression.impl.ConstantDeclaration
 import com.casper.compiler.library.expression.impl.ConstantsBlock
 import com.casper.compiler.library.expression.impl.EscapedSequence
 import com.casper.compiler.library.expression.impl.Identifier
-import com.casper.compiler.library.expression.impl.NameValuePair
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
@@ -20,7 +19,6 @@ interface Visitor<R> {
     fun visitConstantDeclarationExpression(expression: ConstantDeclaration): R
     fun visitConfigBlockBodyExpression(expression: ConfigBlockBody): R
     fun visitConfigBlockExpression(expression: ConfigBlock): R
-    fun visitNameValuePairExpression(expression: NameValuePair): R
     fun visitRecordDeclarationExpression(expression: RecordDeclaration): R
     fun visitIdentifierExpression(expression: Identifier): R
     fun visitRecordValueExpression(expression: RecordValue): R
