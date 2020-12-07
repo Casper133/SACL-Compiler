@@ -1,5 +1,7 @@
 package com.casper.compiler
 
+import com.casper.compiler.exception.ParseException
+import com.casper.compiler.library.error.reportError
 import com.casper.compiler.library.expression.Expression
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
@@ -15,6 +17,7 @@ import com.casper.compiler.library.expression.impl.SourceCode
 import com.casper.compiler.library.token.Token
 import com.casper.compiler.library.token.TokenType
 
+// TODO: Refactor parser (remove code duplicates)
 @Suppress("ControlFlowWithEmptyBody")
 class Parser(private val tokens: List<Token>) {
 
@@ -31,7 +34,12 @@ class Parser(private val tokens: List<Token>) {
         *identifierMatchTokens, TokenType.WHITE_SPACE_CHARACTER
     )
 
-    fun parse(): Expression = sourceCode()
+    fun parse(): Expression? =
+        try {
+            sourceCode()
+        } catch (exception: ParseException) {
+            null
+        }
 
     private fun sourceCode(): Expression {
         while (matchAndAdvanceLinesSeparator()) {
@@ -39,8 +47,11 @@ class Parser(private val tokens: List<Token>) {
 
         val constantsBlock = constantsBlock()
 
-        if (!matchAndAdvanceLinesSeparator()) {
-            TODO("Throw syntax error")
+        if (constantsBlock != null && !matchAndAdvanceLinesSeparator()) {
+            throw error(
+                getPreviousToken(),
+                "Constants block must be separated by line break"
+            )
         }
 
         while (matchAndAdvanceLinesSeparator()) {
@@ -77,7 +88,10 @@ class Parser(private val tokens: List<Token>) {
         }
 
         if (!matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "\"const\" keyword must be separated by white space character"
+            )
         }
 
         while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
@@ -92,7 +106,10 @@ class Parser(private val tokens: List<Token>) {
 
     private fun recordDeclaration(identifier: Expression): Expression {
         if (!matchAndAdvanceToken(TokenType.EQUALS)) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "There must be a '=' character between identifier and value"
+            )
         }
 
         while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
@@ -103,14 +120,20 @@ class Parser(private val tokens: List<Token>) {
 
     private fun configBlock(identifier: Expression): Expression {
         if (!matchAndAdvanceToken(TokenType.LEFT_BRACE)) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "There must be a '{' character at the beginning of the config block"
+            )
         }
 
         while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
         }
 
         if (!matchAndAdvanceLinesSeparator()) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "Line break expected after left curly brace"
+            )
         }
 
         while (matchAndAdvanceLinesSeparator()) {
@@ -119,7 +142,10 @@ class Parser(private val tokens: List<Token>) {
         val configBlockBody = configBlockBody()
 
         if (!matchAndAdvanceLinesSeparator()) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "Line break expected before right curly brace"
+            )
         }
 
         while (matchAndAdvanceLinesSeparator()) {
@@ -129,7 +155,10 @@ class Parser(private val tokens: List<Token>) {
         }
 
         if (!matchAndAdvanceToken(TokenType.RIGHT_BRACE)) {
-            TODO("Throw syntax error")
+            throw error(
+                getPreviousToken(),
+                "There must be a '}' character at the end of the config block"
+            )
         }
 
         while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
@@ -174,8 +203,11 @@ class Parser(private val tokens: List<Token>) {
             identifierBuilder.append(advanceToken().lexeme)
         }
 
-        if (identifierBuilder.isEmpty()) {
-            TODO("Throw syntax error")
+        if (identifierBuilder.isBlank()) {
+            throw error(
+                getPreviousToken(),
+                "Identifier can't be empty"
+            )
         }
 
         return Identifier(identifierBuilder.toString())
@@ -298,7 +330,7 @@ class Parser(private val tokens: List<Token>) {
         return when {
             currentTokenMatch(TokenType.LEFT_BRACE) -> configBlock(identifier)
             currentTokenMatch(TokenType.EQUALS) -> recordDeclaration(identifier)
-            else -> TODO("Throw syntax error")
+            else -> throw error(getPreviousToken(), "'{' or '=' expected here")
         }
     }
 
@@ -365,5 +397,12 @@ class Parser(private val tokens: List<Token>) {
         getCurrentToken().tokenType != TokenType.EOF
 
     private fun getCurrentToken(): Token = tokens[currentTokenIndex]
+
+    private fun getPreviousToken(): Token = tokens[currentTokenIndex - 1]
+
+    private fun error(token: Token, message: String): ParseException {
+        reportError(token, message)
+        return ParseException()
+    }
 
 }

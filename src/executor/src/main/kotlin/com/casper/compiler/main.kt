@@ -22,7 +22,8 @@ fun compileCode(path: String) {
     tokens.forEach(::println)
 
     val ast = Parser(tokens).parse()
-    println("\nAST:\n${AstPrinter().print(ast)}")
 
-    if (hadError) exitProcess(1)
+    if (hadError) return
+
+    println("\nAST:\n${ast?.let(AstPrinter()::print)}")
 }
