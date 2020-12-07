@@ -19,8 +19,6 @@ fun compileCode(path: String) {
     val sourceCode = File(path).readBytes()
     val charset = resolveCharset(sourceCode)
     val tokens = Lexer(String(sourceCode, charset)).scanTokens()
-    tokens.forEach(::println)
-
     val ast = Parser(tokens).parse()
 
     if (hadError) return

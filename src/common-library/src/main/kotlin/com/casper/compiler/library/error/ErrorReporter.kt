@@ -7,7 +7,12 @@ var hadError = false
 
 fun reportError(token: Token, message: String) {
     if (token.tokenType == TokenType.EOF) {
-        reportError(token.line, "at end", message)
+        reportError(token.line, "at the end of file", message)
+        return
+    }
+
+    if (token.tokenType == TokenType.LINE_BREAK_CHARACTER) {
+        reportError(token.line, "at the end of the line", message)
         return
     }
 

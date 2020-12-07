@@ -49,7 +49,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (constantsBlock != null && !matchAndAdvanceLinesSeparator()) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "Constants block must be separated by line break"
             )
         }
@@ -89,7 +89,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (!matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "\"const\" keyword must be separated by white space character"
             )
         }
@@ -107,7 +107,7 @@ class Parser(private val tokens: List<Token>) {
     private fun recordDeclaration(identifier: Expression): Expression {
         if (!matchAndAdvanceToken(TokenType.EQUALS)) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "There must be a '=' character between identifier and value"
             )
         }
@@ -121,7 +121,7 @@ class Parser(private val tokens: List<Token>) {
     private fun configBlock(identifier: Expression): Expression {
         if (!matchAndAdvanceToken(TokenType.LEFT_BRACE)) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "There must be a '{' character at the beginning of the config block"
             )
         }
@@ -131,7 +131,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (!matchAndAdvanceLinesSeparator()) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "Line break expected after left curly brace"
             )
         }
@@ -143,7 +143,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (!matchAndAdvanceLinesSeparator()) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "Line break expected before right curly brace"
             )
         }
@@ -156,7 +156,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (!matchAndAdvanceToken(TokenType.RIGHT_BRACE)) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "There must be a '}' character at the end of the config block"
             )
         }
@@ -182,10 +182,21 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun recordValue(): Expression {
+        val constantCall = constantCall()
+        val escapedSequence = escapedSequence()
+        val charactersSequence = charactersSequence()
+
+        if (constantCall == null && escapedSequence == null && charactersSequence == null) {
+            throw error(
+                getCurrentToken(),
+                "Record value can't be empty"
+            )
+        }
+
         return RecordValue(
-            constantCall(),
-            escapedSequence(),
-            charactersSequence()
+            constantCall,
+            escapedSequence,
+            charactersSequence
         )
     }
 
@@ -205,7 +216,7 @@ class Parser(private val tokens: List<Token>) {
 
         if (identifierBuilder.isBlank()) {
             throw error(
-                getPreviousToken(),
+                getCurrentToken(),
                 "Identifier can't be empty"
             )
         }
@@ -231,7 +242,7 @@ class Parser(private val tokens: List<Token>) {
             charactersSequenceBuilder.append(advanceToken().lexeme)
         }
 
-        if (charactersSequenceBuilder.isEmpty()) {
+        if (charactersSequenceBuilder.isBlank()) {
             return null
         }
 
@@ -330,7 +341,7 @@ class Parser(private val tokens: List<Token>) {
         return when {
             currentTokenMatch(TokenType.LEFT_BRACE) -> configBlock(identifier)
             currentTokenMatch(TokenType.EQUALS) -> recordDeclaration(identifier)
-            else -> throw error(getPreviousToken(), "'{' or '=' expected here")
+            else -> throw error(getCurrentToken(), "'{' or '=' expected here")
         }
     }
 
@@ -397,8 +408,6 @@ class Parser(private val tokens: List<Token>) {
         getCurrentToken().tokenType != TokenType.EOF
 
     private fun getCurrentToken(): Token = tokens[currentTokenIndex]
-
-    private fun getPreviousToken(): Token = tokens[currentTokenIndex - 1]
 
     private fun error(token: Token, message: String): ParseException {
         reportError(token, message)
