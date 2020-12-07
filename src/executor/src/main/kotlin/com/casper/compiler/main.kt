@@ -22,7 +22,7 @@ fun compileCode(path: String) {
     tokens.forEach(::println)
 
     val ast = Parser(tokens).parse()
-    println("\nExpression:\n${AstPrinter().print(ast)}")
+    println("\nAST:\n${AstPrinter().print(ast)}")
 
     if (hadError) exitProcess(1)
 }
