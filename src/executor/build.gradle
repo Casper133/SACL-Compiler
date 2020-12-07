@@ -3,8 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation project(":src:common-lib")
+    implementation project(":src:common-library")
     implementation project(":src:lexer")
+    implementation project(":src:parser")
 }
 
 application {

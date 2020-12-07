@@ -70,5 +70,5 @@ service {
   dashboard-service-url = \${TICKETS_SERVICE_URL:http://localhost:9085}
   vault-service-url = \\$TEST
   geo-service-url = \${GEO_SERVICE_URL:http://localhost:9087}
-  form-config-service-url = \${FORM_CONFIG_SERVICE_URL:http://localhost:9088} 
+  form-config-service-url = \${FORM_CONFIG_SERVICE_URL:http://localhost:9088}
 }

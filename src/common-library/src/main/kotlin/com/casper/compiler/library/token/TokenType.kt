@@ -1,4 +1,4 @@
-package com.casper.compiler.lexer.token
+package com.casper.compiler.library.token
 
 enum class TokenType {
     WHITE_SPACE_CHARACTER,

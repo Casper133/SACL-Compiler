@@ -1,7 +1,7 @@
-package com.casper.compiler.lexer
+package com.casper.compiler
 
-import com.casper.compiler.lexer.token.Token
-import com.casper.compiler.lexer.token.TokenType
+import com.casper.compiler.library.token.Token
+import com.casper.compiler.library.token.TokenType
 
 class Lexer(private val sourceCode: String) {
 
