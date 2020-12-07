@@ -5,7 +5,7 @@ import com.casper.compiler.library.expression.Visitor
 
 data class RecordDeclaration(
     val identifier: Expression,
-    val recordValue: Expression
+    val recordValue: Expression,
 ) : Expression {
 
     override fun <R> accept(visitor: Visitor<R>): R = visitor.visitRecordDeclarationExpression(this)

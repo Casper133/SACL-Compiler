@@ -1,7 +1,7 @@
 package com.casper.compiler.tool
 
-import com.casper.compiler.library.token.Token
 import com.casper.compiler.library.expression.Expression
+import com.casper.compiler.library.expression.Visitor
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
 import com.casper.compiler.library.expression.impl.ConfigBlockBody
@@ -13,7 +13,6 @@ import com.casper.compiler.library.expression.impl.Identifier
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
-import com.casper.compiler.library.expression.Visitor
 
 class AstPrinter : Visitor<String> {
 
