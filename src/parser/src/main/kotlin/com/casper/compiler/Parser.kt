@@ -63,8 +63,8 @@ class Parser(private val tokens: List<Token>) {
         )
     }
 
-    private fun constantsBlock(): Expression? {
-        val constantDeclarations = mutableListOf<Expression>()
+    private fun constantsBlock(): ConstantsBlock? {
+        val constantDeclarations = mutableListOf<ConstantDeclaration>()
         constantDeclarations.add(constantDeclaration() ?: return null)
 
         while (lookaheadMatchConstantDeclaration()) {
@@ -77,7 +77,7 @@ class Parser(private val tokens: List<Token>) {
         return ConstantsBlock(constantDeclarations)
     }
 
-    private fun constantDeclaration(): Expression? {
+    private fun constantDeclaration(): ConstantDeclaration? {
         if (!matchConstKeyword()) {
             return null
         }
@@ -104,7 +104,7 @@ class Parser(private val tokens: List<Token>) {
         )
     }
 
-    private fun recordDeclaration(identifier: Expression): Expression {
+    private fun recordDeclaration(identifier: Identifier): RecordDeclaration {
         if (!matchAndAdvanceToken(TokenType.EQUALS)) {
             throw error(
                 getCurrentToken(),
@@ -118,7 +118,7 @@ class Parser(private val tokens: List<Token>) {
         return RecordDeclaration(identifier, recordValue())
     }
 
-    private fun configBlock(identifier: Expression): Expression {
+    private fun configBlock(identifier: Identifier): ConfigBlock {
         if (!matchAndAdvanceToken(TokenType.LEFT_BRACE)) {
             throw error(
                 getCurrentToken(),
@@ -167,7 +167,7 @@ class Parser(private val tokens: List<Token>) {
         return ConfigBlock(identifier, configBlockBody)
     }
 
-    private fun configBlockBody(): Expression {
+    private fun configBlockBody(): ConfigBlockBody {
         val bodyExpressions = mutableListOf<Expression>()
         bodyExpressions.add(extractConfigBodyExpression())
 
@@ -181,7 +181,7 @@ class Parser(private val tokens: List<Token>) {
         return ConfigBlockBody(bodyExpressions)
     }
 
-    private fun recordValue(): Expression {
+    private fun recordValue(): RecordValue {
         val constantCall = constantCall()
         val escapedSequence = escapedSequence()
         val charactersSequence = charactersSequence()
@@ -200,14 +200,14 @@ class Parser(private val tokens: List<Token>) {
         )
     }
 
-    private fun constantCall(): Expression? {
+    private fun constantCall(): ConstantCall? {
         return when {
             matchAndAdvanceToken(TokenType.DOLLAR_SIGN) -> ConstantCall(identifier())
             else -> null
         }
     }
 
-    private fun identifier(): Expression {
+    private fun identifier(): Identifier {
         val identifierBuilder = StringBuilder()
 
         while (match(*identifierMatchTokens)) {
@@ -221,21 +221,25 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        return Identifier(identifierBuilder.toString())
+        return Identifier(getCurrentToken().line, identifierBuilder.toString())
     }
 
-    private fun escapedSequence(): Expression? {
+    private fun escapedSequence(): EscapedSequence? {
         if (!lookaheadMatchEscapedSequence()) {
             return null
         }
 
         return when {
-            matchAndAdvanceToken(TokenType.BACKSLASH) -> EscapedSequence(extractEscapedText())
+            matchAndAdvanceToken(TokenType.BACKSLASH) ->
+                EscapedSequence(
+                    getCurrentToken().line,
+                    extractEscapedText()
+                )
             else -> null
         }
     }
 
-    private fun charactersSequence(): Expression? {
+    private fun charactersSequence(): CharactersSequence? {
         val charactersSequenceBuilder = StringBuilder()
 
         while (match(*charactersSequenceMatchTokens)) {
@@ -246,7 +250,10 @@ class Parser(private val tokens: List<Token>) {
             return null
         }
 
-        return CharactersSequence(charactersSequenceBuilder.toString())
+        return CharactersSequence(
+            getCurrentToken().line,
+            charactersSequenceBuilder.toString()
+        )
     }
 
     private fun lookaheadMatchConstantDeclaration(): Boolean {
@@ -345,7 +352,7 @@ class Parser(private val tokens: List<Token>) {
         }
     }
 
-    private fun extractIdentifierBeforeWhiteSpaceChars(): Expression {
+    private fun extractIdentifierBeforeWhiteSpaceChars(): Identifier {
         val identifier = identifier()
 
         while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
