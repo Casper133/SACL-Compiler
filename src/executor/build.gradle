@@ -6,6 +6,7 @@ dependencies {
     implementation project(":src:common-library")
     implementation project(":src:lexer")
     implementation project(":src:parser")
+    implementation project(":src:semantic-analyzer")
 }
 
 application {
