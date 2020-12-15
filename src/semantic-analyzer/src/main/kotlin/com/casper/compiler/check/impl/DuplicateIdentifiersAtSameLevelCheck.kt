@@ -1,6 +1,7 @@
 package com.casper.compiler.check.impl
 
 import com.casper.compiler.check.SemanticCheck
+import com.casper.compiler.library.error.reportError
 import com.casper.compiler.library.expression.Expression
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
@@ -14,53 +15,82 @@ import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
 
-class DuplicateIdentifiersOnSameLevelCheck : SemanticCheck {
+class DuplicateIdentifiersAtSameLevelCheck : SemanticCheck {
 
     override fun checkAst(ast: Expression) {
-        return
+        ast.accept(this)
     }
 
     override fun visitSourceCodeExpression(expression: SourceCode) {
-        TODO("Not yet implemented")
+        expression.configBlockBody?.accept(this)
     }
 
     override fun visitConstantsBlockExpression(expression: ConstantsBlock) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitConstantDeclarationExpression(expression: ConstantDeclaration) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitConfigBlockBodyExpression(expression: ConfigBlockBody) {
-        TODO("Not yet implemented")
+        val currentLevelIdentifiers = mutableListOf<Identifier>()
+
+        expression.bodyExpressions.forEach { bodyExpression ->
+            when (bodyExpression) {
+                is ConfigBlock -> currentLevelIdentifiers.add(bodyExpression.identifier)
+                is RecordDeclaration -> currentLevelIdentifiers.add(bodyExpression.identifier)
+                else -> return@forEach
+            }
+        }
+
+        val duplicateIdentifiers = currentLevelIdentifiers
+            .groupingBy { it.text }
+            .eachCount()
+            .filter { it.value > 1 }
+
+        duplicateIdentifiers.forEach { (identifierText, _) ->
+            val identifierLines = currentLevelIdentifiers
+                .filter { it.text == identifierText }
+                .map { it.line }
+                .toList()
+
+            reportError(
+                identifierLines,
+                "duplicate identifiers '${identifierText}' at the same config level"
+            )
+        }
+
+        expression.bodyExpressions.forEach {
+            it.accept(this)
+        }
     }
 
     override fun visitConfigBlockExpression(expression: ConfigBlock) {
-        TODO("Not yet implemented")
+        expression.configBlockBody.accept(this)
     }
 
     override fun visitRecordDeclarationExpression(expression: RecordDeclaration) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitIdentifierExpression(expression: Identifier) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitRecordValueExpression(expression: RecordValue) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitConstantCallExpression(expression: ConstantCall) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitEscapedSequenceExpression(expression: EscapedSequence) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun visitCharactersSequenceExpression(expression: CharactersSequence) {
-        TODO("Not yet implemented")
+        return
     }
 }

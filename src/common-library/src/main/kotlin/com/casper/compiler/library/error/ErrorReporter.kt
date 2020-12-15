@@ -23,6 +23,12 @@ fun reportError(line: Int, message: String) {
     reportError(line, location = "", message)
 }
 
+fun reportError(lines: List<Int>, message: String) {
+    val linesString = lines.joinToString { it.toString() }
+    System.err.println("[Lines $linesString] Error: $message.")
+    hadError = true
+}
+
 private fun reportError(line: Int, location: String, message: String) {
     val errorPrefix = if (location.isEmpty()) "Error" else "Error $location"
 
