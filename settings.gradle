@@ -1,1 +1,9 @@
 rootProject.name = 'SACL-Compiler'
+
+include ":src:common-library"
+include ":src:executor"
+include ":src:lexer"
+include ":src:parser"
+include ":src:semantic-analyzer"
+include ":src:yaml-generator"
+include ":tools:expression-class-generator"
