@@ -35,3 +35,7 @@ private fun reportError(line: Int, location: String, message: String) {
     System.err.println("[Line $line] $errorPrefix: $message.")
     hadError = true
 }
+
+fun reportCriticalError(message: String) {
+    System.err.println("Critical error: $message")
+}

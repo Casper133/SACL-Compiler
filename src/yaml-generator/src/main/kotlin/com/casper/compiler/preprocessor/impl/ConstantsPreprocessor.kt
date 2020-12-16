@@ -1,5 +1,6 @@
 package com.casper.compiler.preprocessor.impl
 
+import com.casper.compiler.library.error.reportCriticalError
 import com.casper.compiler.library.expression.Expression
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
@@ -23,7 +24,11 @@ class ConstantsPreprocessor : AstPreprocessor {
     private val constants = mutableMapOf<String, String>()
 
     override fun runPreprocessing(ast: Expression) {
-        ast.accept(this)
+        try {
+            ast.accept(this)
+        } catch (exception: IllegalStateException) {
+            reportCriticalError(exception.message ?: "")
+        }
     }
 
     override fun visitSourceCodeExpression(expression: SourceCode) {
