@@ -1,74 +1,60 @@
-const TRUE_CONSTANT = true
-const FILE_SIZE = 10MB
-const TRACE_LOGGING_LEVEL = TRACE
+const RESTART_VALUE = on-failure
+const NETWORK_NAME = link-shortener-network
+const PostgreSQL_Port = 5432
 
-server {
-  port = \${PORT:8080}
-}
+version = "3.7"
 
-test-1 = Test
-test-2 = $FILE_SIZE
+services {
+  link-shortener-service {
+    build = .
+    image = link-shortener:latest
+    container_name = link-shortener-service
+    restart = $RESTART_VALUE
+    working_dir = /var/www/link_shortener
 
-spring {
-  mvc {
-    async {
-      request-timeout = 80000
-      test-1 = Qwerty
-      test-2 = Qwerty
-    }
-  }
-
-  servlet {
-    multipart {
-      enabled = $TRUE_CONSTANT
-      max-file-size = $FILE_SIZE
-      max-request-size = $FILE_SIZE
-    }
-  }
-
-  http {
-    log-request-details = $TRUE_CONSTANT
-
-    encoding {
-      charset = UTF-8
-      enabled = $TRUE_CONSTANT
-      force = $TRUE_CONSTANT
-    }
-  }
-
-  codec {
-    max-in-memory-size = -1
-  }
-}
-
-logging {
-  level {
-    org.springframework.web {
-      server.adapter.HttpWebHandlerAdapter = $TRACE_LOGGING_LEVEL
-      HttpLogging = $TRACE_LOGGING_LEVEL
-      reactive.function.client.ExchangeFunctions = $TRACE_LOGGING_LEVEL
+    environment {
+      POSTGRES_DB_HOST = postgres-service
+      POSTGRES_DB_PORT = $PostgreSQL_Port
+      POSTGRES_DB_NAME = link_shortener
+      POSTGRES_USERNAME = postgres
+      POSTGRES_PASSWORD = postgres
+      CURRENT_DOMAIN = "http://localhost"
     }
 
-    com.phoenix.api = DEBUG
-    root = INFO
+    volumes = ./:/var/www/link_shortener
+    networks = $NETWORK_NAME
+    depends_on = postgres-service
   }
 
-  file {
-    name = \${LOGS_DIRECTORY:logs}/phoenix.log
-    max-history = 30
-    max-size = 10MB
+  nginx-service {
+    image = nginx:1.18.0-alpine
+    container_name = nginx-service
+    restart = $RESTART_VALUE
+    ports = 80:80
+    volumes = ./:/var/www/link_shortener
+    networks = $NETWORK_NAME
+    depends_on = link-shortener-service
   }
 
-  pattern {
-    dateformat = dd-MM-yyyy HH:mm:ss.SSS, Europe/Minsk
-    rolling-file-name = \${LOGS_DIRECTORY:logs}/archived/phoenix.%d{dd-MM-yyyy}.%i.log
+  postgres-service {
+    image = postgres:12.0
+    container_name = postgres-service
+    restart = $RESTART_VALUE
+    ports = $PostgreSQL_Port
+
+    environment {
+      POSTGRES_DB = link_shortener
+      POSTGRES_USER = postgres
+      POSTGRES_PASSWORD = postgres
+    }
+
+    volumes = postgres-link-shortener-data:/var/lib/postgresql/data
+    networks = $NETWORK_NAME
   }
 }
 
-service {
-  tickets-service-url = \${TICKETS_SERVICE_URL:http://localhost:9085}
-  dashboard-service-url = \${TICKETS_SERVICE_URL:http://localhost:9085}
-  vault-service-url = \\$TEST
-  geo-service-url = \${GEO_SERVICE_URL:http://localhost:9087}
-  form-config-service-url = \${FORM_CONFIG_SERVICE_URL:http://localhost:9088}
+networks {
+  link-shortener-network {
+    driver = bridge
+  }
 }
