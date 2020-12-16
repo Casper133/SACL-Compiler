@@ -17,8 +17,6 @@ import com.casper.compiler.library.expression.impl.SourceCode
 import com.casper.compiler.library.token.Token
 import com.casper.compiler.library.token.TokenType
 
-// TODO: Refactor parser (remove code duplicates)
-@Suppress("ControlFlowWithEmptyBody")
 class Parser(private val tokens: List<Token>) {
 
     private var currentTokenIndex = 0
@@ -42,9 +40,7 @@ class Parser(private val tokens: List<Token>) {
         }
 
     private fun sourceCode(): Expression {
-        while (matchAndAdvanceLinesSeparator()) {
-        }
-
+        skipLinesSeparators()
         val constantsBlock = constantsBlock()
 
         if (constantsBlock != null && !matchAndAdvanceLinesSeparator()) {
@@ -54,8 +50,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceLinesSeparator()) {
-        }
+        skipLinesSeparators()
 
         return SourceCode(
             constantsBlock,
@@ -68,9 +63,7 @@ class Parser(private val tokens: List<Token>) {
         constantDeclarations.add(constantDeclaration() ?: return null)
 
         while (lookaheadMatchConstantDeclaration()) {
-            while (matchAndAdvanceLinesSeparator()) {
-            }
-
+            skipLinesSeparators()
             constantDeclaration()?.also(constantDeclarations::add)
         }
 
@@ -94,8 +87,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
+        skipWhiteSpaceCharacters()
 
         return ConstantDeclaration(
             recordDeclaration(
@@ -112,8 +104,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
+        skipWhiteSpaceCharacters()
 
         return RecordDeclaration(identifier, recordValue())
     }
@@ -126,8 +117,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
+        skipWhiteSpaceCharacters()
 
         if (!matchAndAdvanceLinesSeparator()) {
             throw error(
@@ -136,9 +126,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceLinesSeparator()) {
-        }
-
+        skipLinesSeparators()
         val configBlockBody = configBlockBody()
 
         if (!matchAndAdvanceLinesSeparator()) {
@@ -148,11 +136,8 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceLinesSeparator()) {
-        }
-
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
+        skipLinesSeparators()
+        skipWhiteSpaceCharacters()
 
         if (!matchAndAdvanceToken(TokenType.RIGHT_BRACE)) {
             throw error(
@@ -161,8 +146,7 @@ class Parser(private val tokens: List<Token>) {
             )
         }
 
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
+        skipWhiteSpaceCharacters()
 
         return ConfigBlock(identifier, configBlockBody)
     }
@@ -172,13 +156,17 @@ class Parser(private val tokens: List<Token>) {
         bodyExpressions.add(extractConfigBodyExpression())
 
         while (lookaheadMatchConfigBlockBodyIdentifier()) {
-            while (matchAndAdvanceLinesSeparator()) {
-            }
-
+            skipLinesSeparators()
             bodyExpressions.add(extractConfigBodyExpression())
         }
 
         return ConfigBlockBody(bodyExpressions)
+    }
+
+    private fun skipLinesSeparators() {
+        while (matchAndAdvanceLinesSeparator()) {
+            continue
+        }
     }
 
     private fun recordValue(): RecordValue {
@@ -340,9 +328,7 @@ class Parser(private val tokens: List<Token>) {
             ?: false
 
     private fun extractConfigBodyExpression(): Expression {
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
-
+        skipWhiteSpaceCharacters()
         val identifier = extractIdentifierBeforeWhiteSpaceChars()
 
         return when {
@@ -354,18 +340,19 @@ class Parser(private val tokens: List<Token>) {
 
     private fun extractIdentifierBeforeWhiteSpaceChars(): Identifier {
         val identifier = identifier()
-
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
-
+        skipWhiteSpaceCharacters()
         return identifier
     }
 
     private fun matchAndAdvanceLinesSeparator(): Boolean {
-        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
-        }
-
+        skipWhiteSpaceCharacters()
         return matchAndAdvanceToken(TokenType.LINE_BREAK_CHARACTER)
+    }
+
+    private fun skipWhiteSpaceCharacters() {
+        while (matchAndAdvanceToken(TokenType.WHITE_SPACE_CHARACTER)) {
+            continue
+        }
     }
 
     private fun lookaheadMatchEscapedSequence(): Boolean {
