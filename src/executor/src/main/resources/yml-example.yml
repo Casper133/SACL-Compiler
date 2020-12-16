@@ -1,9 +1,7 @@
 server:
   port: ${PORT:8080}
-
 test-1: Test
 test-2: 10MB
-
 spring:
   mvc:
     async:
@@ -23,7 +21,6 @@ spring:
       force: true
   codec:
     max-in-memory-size: -1
-
 logging:
   level:
     org.springframework.web:
@@ -39,7 +36,6 @@ logging:
   pattern:
     dateformat: dd-MM-yyyy HH:mm:ss.SSS, Europe/Minsk
     rolling-file-name: ${LOGS_DIRECTORY:logs}/archived/phoenix.%d{dd-MM-yyyy}.%i.log
-
 service:
   tickets-service-url: ${TICKETS_SERVICE_URL:http://localhost:9085}
   dashboard-service-url: ${TICKETS_SERVICE_URL:http://localhost:9085}

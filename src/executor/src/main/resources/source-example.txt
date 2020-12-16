@@ -22,7 +22,7 @@ spring {
     multipart {
       enabled = $TRUE_CONSTANT
       max-file-size = $FILE_SIZE
-      max-request-file = $FILE_SIZE
+      max-request-size = $FILE_SIZE
     }
   }
 

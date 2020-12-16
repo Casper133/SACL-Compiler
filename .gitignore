@@ -1,3 +1,6 @@
 .idea
 .gradle
 build
+
+# Generated YAML files
+*.yaml
