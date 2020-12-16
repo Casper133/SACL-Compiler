@@ -36,6 +36,7 @@ class ConstantsUsageCheck : SemanticCheck {
 
     override fun visitConstantDeclarationExpression(expression: ConstantDeclaration) {
         constantIdentifiers.add(expression.recordDeclaration.identifier.text)
+        expression.recordDeclaration.recordValue.constantCall?.accept(this)
     }
 
     override fun visitConfigBlockBodyExpression(expression: ConfigBlockBody) {
@@ -67,7 +68,7 @@ class ConstantsUsageCheck : SemanticCheck {
 
         reportError(
             expression.identifier.line,
-            "constant identifier '$constantIdentifier' not defined"
+            "constant '$constantIdentifier' not defined"
         )
     }
 
