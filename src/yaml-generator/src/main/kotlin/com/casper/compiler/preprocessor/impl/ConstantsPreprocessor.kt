@@ -1,7 +1,6 @@
-package com.casper.compiler.check.impl
+package com.casper.compiler.preprocessor.impl
 
-import com.casper.compiler.check.SemanticCheck
-import com.casper.compiler.library.error.reportError
+import com.casper.compiler.library.error.reportCriticalError
 import com.casper.compiler.library.expression.Expression
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
@@ -14,13 +13,22 @@ import com.casper.compiler.library.expression.impl.Identifier
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
+import com.casper.compiler.preprocessor.AstPreprocessor
 
-class ConstantsUsageCheck : SemanticCheck {
+class ConstantsPreprocessor : AstPreprocessor {
 
-    private val constantIdentifiers = mutableListOf<String>()
+    private companion object {
+        private const val UNDEFINED_LINE = -1
+    }
 
-    override fun checkAst(ast: Expression) {
-        ast.accept(this)
+    private val constants = mutableMapOf<String, String>()
+
+    override fun runPreprocessing(ast: Expression) {
+        try {
+            ast.accept(this)
+        } catch (exception: IllegalStateException) {
+            reportCriticalError(exception.message ?: "")
+        }
     }
 
     override fun visitSourceCodeExpression(expression: SourceCode) {
@@ -35,8 +43,14 @@ class ConstantsUsageCheck : SemanticCheck {
     }
 
     override fun visitConstantDeclarationExpression(expression: ConstantDeclaration) {
-        constantIdentifiers.add(expression.recordDeclaration.identifier.text)
-        expression.recordDeclaration.recordValue.constantCall?.accept(this)
+        val constantIdentifier = expression.recordDeclaration.identifier.text
+        constants[constantIdentifier] = expression
+            .recordDeclaration
+            .recordValue
+            .inlineConstantCallAndEscapedSequence()
+            .charactersSequence
+            ?.text
+            ?: throw IllegalStateException("no constant value for '$constantIdentifier'")
     }
 
     override fun visitConfigBlockBodyExpression(expression: ConfigBlockBody) {
@@ -50,7 +64,7 @@ class ConstantsUsageCheck : SemanticCheck {
     }
 
     override fun visitRecordDeclarationExpression(expression: RecordDeclaration) {
-        expression.recordValue.accept(this)
+        expression.recordValue.inlineConstantCallAndEscapedSequence()
     }
 
     override fun visitIdentifierExpression(expression: Identifier) {
@@ -58,18 +72,11 @@ class ConstantsUsageCheck : SemanticCheck {
     }
 
     override fun visitRecordValueExpression(expression: RecordValue) {
-        expression.constantCall?.accept(this)
+        return
     }
 
     override fun visitConstantCallExpression(expression: ConstantCall) {
-        val constantIdentifier = expression.identifier.text
-
-        if (constantIdentifiers.contains(constantIdentifier)) return
-
-        reportError(
-            expression.identifier.line,
-            "constant '$constantIdentifier' not defined"
-        )
+        return
     }
 
     override fun visitEscapedSequenceExpression(expression: EscapedSequence) {
@@ -79,4 +86,28 @@ class ConstantsUsageCheck : SemanticCheck {
     override fun visitCharactersSequenceExpression(expression: CharactersSequence) {
         return
     }
+
+    private fun RecordValue.inlineConstantCallAndEscapedSequence(): RecordValue {
+        this.constantCall?.let {
+            val constantValue =
+                constants[it.identifier.text]
+                    ?: throw IllegalStateException("constant '${it.identifier.text}' not defined")
+
+            this.charactersSequence = CharactersSequence(UNDEFINED_LINE, constantValue)
+            this.constantCall = null
+        }
+
+        this.escapedSequence?.let {
+            val charactersSequenceText =
+                this.charactersSequence?.text
+                    ?: throw IllegalStateException("character sequence is empty")
+
+            val inlinedText = "${it.text}$charactersSequenceText"
+            this.charactersSequence = CharactersSequence(UNDEFINED_LINE, inlinedText)
+            this.escapedSequence = null
+        }
+
+        return this
+    }
+
 }

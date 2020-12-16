@@ -5,6 +5,8 @@ import com.casper.compiler.library.error.hadError
 import java.io.File
 import kotlin.system.exitProcess
 
+private const val YAML_FILE_EXTENSION = "yaml"
+
 fun main(args: Array<String>) {
     if (args.size != 1) {
         System.err.println("First argument must be the name of the file with source code.")
@@ -15,7 +17,14 @@ fun main(args: Array<String>) {
 }
 
 fun compileCode(path: String) {
-    val sourceCode = File(path).readBytes()
+    val sourceCodeFile = File(path)
+
+    if (!sourceCodeFile.exists()) {
+        System.err.println("File '${sourceCodeFile.name}' not exists.")
+        exitProcess(1)
+    }
+
+    val sourceCode = sourceCodeFile.readBytes()
     val charset = resolveCharset(sourceCode)
 
     val tokens = Lexer(String(sourceCode, charset)).scanTokens()
@@ -26,6 +35,12 @@ fun compileCode(path: String) {
 
     SemanticAnalyzer(ast).runChecks()
     exitProcessIfErrorOccurs()
+
+    val generatedFile = File(
+        "${sourceCodeFile.nameWithoutExtension}.$YAML_FILE_EXTENSION"
+    ).also(File::createNewFile)
+
+    YamlGenerator(ast, generatedFile).generateYAML()
 }
 
 private fun exitProcessIfErrorOccurs() {

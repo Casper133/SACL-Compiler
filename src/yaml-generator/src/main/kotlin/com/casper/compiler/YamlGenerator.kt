@@ -1,8 +1,7 @@
-package com.casper.compiler.check.impl
+package com.casper.compiler
 
-import com.casper.compiler.check.SemanticCheck
-import com.casper.compiler.library.error.reportError
 import com.casper.compiler.library.expression.Expression
+import com.casper.compiler.library.expression.Visitor
 import com.casper.compiler.library.expression.impl.CharactersSequence
 import com.casper.compiler.library.expression.impl.ConfigBlock
 import com.casper.compiler.library.expression.impl.ConfigBlockBody
@@ -14,29 +13,37 @@ import com.casper.compiler.library.expression.impl.Identifier
 import com.casper.compiler.library.expression.impl.RecordDeclaration
 import com.casper.compiler.library.expression.impl.RecordValue
 import com.casper.compiler.library.expression.impl.SourceCode
+import com.casper.compiler.preprocessor.impl.ConstantsPreprocessor
+import java.io.File
 
-class ConstantsUsageCheck : SemanticCheck {
+class YamlGenerator(
+    private val ast: Expression,
+    private val generatedFile: File,
+) : Visitor<Unit> {
 
-    private val constantIdentifiers = mutableListOf<String>()
+    private companion object {
+        private const val DEFAULT_INDENT = "  "
+    }
 
-    override fun checkAst(ast: Expression) {
+    private var currentNestingLevel = 0
+    private var resultCodeBuilder = StringBuilder()
+
+    fun generateYAML() {
+        ConstantsPreprocessor().runPreprocessing(ast)
         ast.accept(this)
+        generatedFile.writeText(resultCodeBuilder.toString(), Charsets.UTF_8)
     }
 
     override fun visitSourceCodeExpression(expression: SourceCode) {
-        expression.constantsBlock?.accept(this)
         expression.configBlockBody?.accept(this)
     }
 
     override fun visitConstantsBlockExpression(expression: ConstantsBlock) {
-        expression.constantDeclarations.forEach {
-            it.accept(this)
-        }
+        return
     }
 
     override fun visitConstantDeclarationExpression(expression: ConstantDeclaration) {
-        constantIdentifiers.add(expression.recordDeclaration.identifier.text)
-        expression.recordDeclaration.recordValue.constantCall?.accept(this)
+        return
     }
 
     override fun visitConfigBlockBodyExpression(expression: ConfigBlockBody) {
@@ -46,11 +53,35 @@ class ConstantsUsageCheck : SemanticCheck {
     }
 
     override fun visitConfigBlockExpression(expression: ConfigBlock) {
+        currentNestingLevel++
+
+        resultCodeBuilder
+            .append(expression.identifier.text)
+            .append(":")
+            .append("\n")
+            .append(DEFAULT_INDENT.repeat(currentNestingLevel))
+
         expression.configBlockBody.accept(this)
+
+        currentNestingLevel--
+
+        val lastIndentIndex = resultCodeBuilder.lastIndexOf(DEFAULT_INDENT)
+
+        resultCodeBuilder = resultCodeBuilder
+            .deleteRange(
+                lastIndentIndex, resultCodeBuilder.length
+            )
     }
 
     override fun visitRecordDeclarationExpression(expression: RecordDeclaration) {
-        expression.recordValue.accept(this)
+        resultCodeBuilder
+            .append(expression.identifier.text)
+            .append(": ")
+            .append(expression.recordValue.charactersSequence?.text ?: "")
+            .append("\n")
+            .append(DEFAULT_INDENT.repeat(currentNestingLevel))
+
+        return
     }
 
     override fun visitIdentifierExpression(expression: Identifier) {
@@ -58,18 +89,11 @@ class ConstantsUsageCheck : SemanticCheck {
     }
 
     override fun visitRecordValueExpression(expression: RecordValue) {
-        expression.constantCall?.accept(this)
+        return
     }
 
     override fun visitConstantCallExpression(expression: ConstantCall) {
-        val constantIdentifier = expression.identifier.text
-
-        if (constantIdentifiers.contains(constantIdentifier)) return
-
-        reportError(
-            expression.identifier.line,
-            "constant '$constantIdentifier' not defined"
-        )
+        return
     }
 
     override fun visitEscapedSequenceExpression(expression: EscapedSequence) {
@@ -79,4 +103,5 @@ class ConstantsUsageCheck : SemanticCheck {
     override fun visitCharactersSequenceExpression(expression: CharactersSequence) {
         return
     }
+
 }

@@ -7,6 +7,7 @@ dependencies {
     implementation project(":src:lexer")
     implementation project(":src:parser")
     implementation project(":src:semantic-analyzer")
+    implementation project(":src:yaml-generator")
 }
 
 application {
