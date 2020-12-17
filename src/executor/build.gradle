@@ -1,5 +1,6 @@
 plugins {
     id "application"
+    id "com.github.johnrengelman.shadow" version "$shadowPluginVersion"
 }
 
 dependencies {
@@ -10,6 +11,15 @@ dependencies {
     implementation project(":src:yaml-generator")
 }
 
+def appMainClass = "com.casper.compiler.MainKt"
+
 application {
-    mainClass.set("com.casper.compiler.MainKt")
+    mainClass.set(appMainClass)
+}
+
+shadowJar {
+    mainClassName = appMainClass
+    archiveBaseName.set("sacl-compiler")
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }

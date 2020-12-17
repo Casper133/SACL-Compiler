@@ -36,11 +36,11 @@ fun compileCode(path: String) {
     SemanticAnalyzer(ast).runChecks()
     exitProcessIfErrorOccurs()
 
-    val generatedFile = File(
-        "${sourceCodeFile.nameWithoutExtension}.$YAML_FILE_EXTENSION"
-    ).also(File::createNewFile)
+    val generatedFileName = "${sourceCodeFile.nameWithoutExtension}.$YAML_FILE_EXTENSION"
+    val generatedFile = File(generatedFileName).also(File::createNewFile)
 
     YamlGenerator(ast, generatedFile).generateYAML()
+    println("File '$generatedFileName' compiled successfully.")
 }
 
 private fun exitProcessIfErrorOccurs() {
