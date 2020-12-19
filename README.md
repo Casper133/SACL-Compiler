@@ -2,6 +2,8 @@
 
 SACL (***S**yntactically **A**wesome **C**onfig **L**anguage*) — config DSL, that can be transpiled to YAML.
 
+Special thanks to ["Crafting Interpreters" handbook](https://craftinginterpreters.com).
+
 ## Code example
 
 ```
