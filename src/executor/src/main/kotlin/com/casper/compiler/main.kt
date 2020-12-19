@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
     compileCode(args[0])
 }
 
-fun compileCode(path: String) {
+private fun compileCode(path: String) {
     val sourceCodeFile = File(path)
 
     if (!sourceCodeFile.exists()) {
